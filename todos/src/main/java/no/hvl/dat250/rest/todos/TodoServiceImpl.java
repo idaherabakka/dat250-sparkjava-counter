@@ -3,12 +3,9 @@ package no.hvl.dat250.rest.todos;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class TodoServiceImpl implements TodoService {
-    private Collection<Todo> todoMap;
+public class TodoServiceImpl implements TodoService{
 
-    public TodoServiceImpl() {
-        todoMap = new ArrayList<>();
-    }
+    Collection<Todo> todoMap = new ArrayList<>();
 
     @Override
     public void addTodo(Todo todo) {
@@ -19,8 +16,9 @@ public class TodoServiceImpl implements TodoService {
     public Collection<Todo> getTodos() {
         return todoMap;
     }
+
     @Override
-    public Todo getTodo(String id) {
+    public Todo getTodo(Long id) {
         for(Todo item: todoMap){
             if(item.getId().equals(id)){
                 return item;
@@ -30,40 +28,24 @@ public class TodoServiceImpl implements TodoService {
     }
 
     @Override
-    public Todo editTodo(Todo forEdit) {
-        try {
-            if (forEdit.getId() == null)
-                throw new Exception("ID cannot be blank");
+    public Todo editTodo(Todo todo) {
+        Todo updated = getTodo(todo.getId());
+        deleteTodo(todo.getId());
+        updated.setDescription(todo.getDescription());
+        updated.setSummary(todo.getSummary());
+        addTodo(updated);
 
-            Todo toEdit = forEdit;
-
-            if (toEdit == null)
-                throw new Exception("Todo not found");
-
-            //FIX skal ikkje kunna endras
-            if (forEdit.getId() != null) {
-                toEdit.setId(forEdit.getId());
-            }
-            if (forEdit.getDescription() != null) {
-                toEdit.setDescription(forEdit.getDescription());
-            }
-            if (forEdit.getSummary() != null) {
-                toEdit.setSummary(forEdit.getSummary());
-            }
-
-            return toEdit;
-        } catch (Exception ex) {
-            return null;
-        }
+        return updated;
     }
 
     @Override
-    public void deleteTodo(String id) {
-        todoMap.remove(id);
+    public void deleteTodo(Long id) {
+        todoMap.remove(getTodo(id));
+
     }
 
     @Override
-    public boolean todoExist(String id) {
+    public boolean todoExist(Long id) {
         if(getTodo(id)!= null){
             return true;
         }

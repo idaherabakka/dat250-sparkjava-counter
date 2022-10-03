@@ -3,14 +3,10 @@ package no.hvl.dat250.rest.todos;
 import java.util.Collection;
 
 public interface TodoService {
-    public void addTodo(Todo employee);
+    public void addTodo(Todo todo);
     public Collection<Todo> getTodos();
-    public Todo getTodo(String id);
-    //suppose to have?
-    public Todo editTodo(Todo employee);
-    public void deleteTodo(String id);
-    public boolean todoExist(String id);
-
-
-
+    public Todo getTodo(Long id);
+    public Todo editTodo(Todo todo);
+    public void deleteTodo(Long id);
+    public boolean todoExist(Long id);
 }

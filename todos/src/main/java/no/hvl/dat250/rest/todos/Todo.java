@@ -5,7 +5,6 @@ import com.google.gson.Gson;
 import java.util.Objects;
 
 public class Todo {
-    //ikkje final?? har fjerna final
     private Long id;
     private String summary;
     private String description;
@@ -33,9 +32,6 @@ public class Todo {
         return id;
     }
 
-    public void setId(Long id){
-        this.id = id;
-    }
     public String getSummary() {
         return summary;
     }

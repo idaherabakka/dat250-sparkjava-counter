@@ -9,7 +9,22 @@ import static spark.Spark.*;
  */
 public class TodoAPI {
 
+    //FIX!!!!
+    /*private static Boolean isNumeric(String num) {
+        try {
+            Long.parseLong(num);
+            return true;
+        }catch (NumberFormatException e){
+            return false;
+        }
+    }*/
+
+    public static boolean isNumeric(String str) {
+        return str != null && str.matches("[-+]?\\d*\\.?\\d+");
+    }
+
     static Todo todo = null;
+
 
     public static void main(String[] args) {
 
@@ -23,85 +38,61 @@ public class TodoAPI {
 
         final TodoService todoService = new TodoServiceImpl();
 
-       /* post("/todo", (request, response) -> {
-            response.type("application/json");
 
-            Todo todo = new Gson().fromJson
-                    (request.body(), Todo.class);
-            todoService.addTodo(todo);
-
-        });*/
-
-
-        // TODO: Implement API, such that the testcases succeed.
-
-        //FIX: parameters!
-        /*todo = new Todo(4L, "tt", "ksdm");
-
-        get("/todo", (req, res) -> "Hello World!");
-
-        get("/todo", (req, res) -> todo.toJson());
-
-        get("/todo/red", (req, res) -> todo.getId());
-*/
-        //get("/counters/green", (req, res) -> todo.getDescription());
-
-        //get("/counters/green", (req, res) -> todo.getSummary());
-
-        // TODO: put for green/red and in JSON
-        // variant that returns link/references to red and green counter
-        /*put("/todo", (req,res) -> {
-
+        get("/todos", (request, response) -> {
             Gson gson = new Gson();
-
-            todo = gson.fromJson(req.body(), Todo.class);
-
-            return todo.toJson();
-
-        });*/
-
-        //Create
-        // read
-        // update
-        //delete
-
-        get("/todo", (request, response) -> {
-            response.type("application/json");
-
-            return new Gson().toJson(new Gson().toJsonTree(todoService.getTodos()));
+            return gson.toJson(todoService.getTodos());
         });
 
-        get("/todo/:id", (request, response) -> {
-            response.type("application/json");
-
-            return new Gson().toJson(
-                            new Gson().toJsonTree(todoService.getTodo
-                                    (request.params(":id"))));
-        });
-
-        put("/todo/:id", (request, response) -> {
-            response.type("application/json");
-
-            Todo toEdit = new Gson().fromJson(request.body(),
-                    Todo.class);
-            Todo editedTodo = todoService.editTodo(toEdit);
-
-            if (editedTodo != null) {
-                return new Gson()
-                        .toJson( new Gson().
-                                        toJsonTree(editedTodo));
+        get("/todos/:id", (request, response) -> {
+            String paramId = request.params(":id");
+            if (isNumeric(paramId)) {
+                Long id = Long.parseLong(paramId);
+                if (todoService.getTodo(id) != null) {
+                    return new Gson().toJson(new Gson().toJsonTree(todoService.getTodo(id)));
+                } else {
+                    return String.format("Todo with the id  \"%s\" not found!", paramId);
+                }
             } else {
-                return new Gson().toJson(
-                                new Gson().toJson
-                                        ("Todo not found or error in edit"));
+                return String.format("The id \"%s\" is not a number!", paramId);
             }
         });
 
-        delete("/todo/:id", (request, response) -> {
-            response.type("application/json");
 
-            todoService.deleteTodo(request.params(":id"));
-            return new Gson().toJson( "todo deleted successfully");
+        post("/todos", (request, response) -> {
+            Todo newTodo = new Gson().fromJson(request.body(), Todo.class);
+            todoService.addTodo(newTodo);
+            return new Gson().toJson(newTodo);
         });
+
+        put("/todos/:id",((request, response) -> {
+            String paramId = request.params(":id");
+            if(!(isNumeric(paramId))){
+                return String.format("The id \"%s\" is not a number!", paramId);
+            }
+            Todo originalTodo = new Gson().fromJson(request.body(), Todo.class);
+            Todo updatedTodo = todoService.editTodo(originalTodo);
+            if(updatedTodo !=null){
+                return new Gson().toJson(updatedTodo);
+            }else{
+                return String.format("Todo with the id  \"%s\" not found!", paramId);
+            }
+
+        }));
+
+        delete("/todos/:id",((request, response) -> {
+            String paramId = request.params(":id");
+            if(!(isNumeric(paramId))){
+                return String.format("The id \"%s\" is not a number!", paramId);
+            }
+            Long id = Long.parseLong(paramId);
+            if(!(todoService.todoExist(id))){
+                return String.format("Todo with the id  \"%s\" not found!", paramId);
+            }else{
+                todoService.deleteTodo(id);
+                return ("deleted");
+            }}
+        ));
+
     }
 }
