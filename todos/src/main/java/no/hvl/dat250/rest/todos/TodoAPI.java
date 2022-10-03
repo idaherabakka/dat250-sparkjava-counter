@@ -9,15 +9,6 @@ import static spark.Spark.*;
  */
 public class TodoAPI {
 
-    //FIX!!!!
-    /*private static Boolean isNumeric(String num) {
-        try {
-            Long.parseLong(num);
-            return true;
-        }catch (NumberFormatException e){
-            return false;
-        }
-    }*/
 
     public static boolean isNumeric(String str) {
         return str != null && str.matches("[-+]?\\d*\\.?\\d+");
